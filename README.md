@@ -1,4 +1,4 @@
-# Claude SVG Charts — 让任何大模型都能生成 Claude artifact 风格的专业图表、流程图和交互式可视化。
+# Claude infographic Charts — 让任何大模型都能生成 Claude artifact 风格的专业图表、流程图和交互式可视化。
 
 ---
 
