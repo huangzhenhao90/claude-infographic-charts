@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="100%" viewBox="0 0 680 400"
+     font-family="system-ui, -apple-system, 'Segoe UI', sans-serif">
+  <style>
+    .text-primary { fill: #2C2C2A; }
+    .text-secondary { fill: #5F5E5A; }
+    .text-tertiary { fill: #888780; }
+    @media (prefers-color-scheme: dark) {
+      .text-primary { fill: #e0e0e0; }
+      .text-secondary { fill: #a0a0a0; }
+      .text-tertiary { fill: #707070; }
+    }
+  </style>
+
+  <!-- Chart title -->
+  <text x="340" y="30" text-anchor="middle" font-size="16" font-weight="500" class="text-primary">Market share by browser, 2025</text>
+
+  <!-- Donut chart: center at 260,210, outer radius 140, inner radius 85 -->
+  <!-- Chrome 65%: 0 to 234 degrees -->
+  <path d="M 260 70 A 140 140 0 1 1 142.04 316.21 L 176.22 274.42 A 85 85 0 1 0 260 125 Z"
+        fill="#534AB7"/>
+  <!-- Safari 18%: 234 to 298.8 degrees -->
+  <path d="M 142.04 316.21 A 140 140 0 0 1 191.88 78.85 L 218.57 117.53 A 85 85 0 0 0 176.22 274.42 Z"
+        fill="#1D9E75"/>
+  <!-- Firefox 8%: 298.8 to 327.6 degrees -->
+  <path d="M 191.88 78.85 A 140 140 0 0 1 234.59 72.05 L 227.79 117.10 A 85 85 0 0 0 218.57 117.53 Z"
+        fill="#D85A30"/>
+  <!-- Edge 6%: 327.6 to 349.2 degrees -->
+  <path d="M 234.59 72.05 A 140 140 0 0 1 256.19 70.05 L 253.76 125.03 A 85 85 0 0 0 227.79 117.10 Z"
+        fill="#D4537E"/>
+  <!-- Other 3%: 349.2 to 360 degrees -->
+  <path d="M 256.19 70.05 A 140 140 0 0 1 260 70 L 260 125 A 85 85 0 0 0 253.76 125.03 Z"
+        fill="#888780"/>
+
+  <!-- Center text -->
+  <text x="260" y="200" text-anchor="middle" dominant-baseline="central"
+        font-size="28" font-weight="500" class="text-primary">65%</text>
+  <text x="260" y="226" text-anchor="middle" dominant-baseline="central"
+        font-size="12" class="text-secondary">Chrome leads</text>
+
+  <!-- Legend (right side) -->
+  <rect x="440" y="120" width="10" height="10" rx="2" fill="#534AB7"/>
+  <text x="456" y="125" dominant-baseline="central" class="text-secondary" font-size="13">Chrome 65%</text>
+
+  <rect x="440" y="150" width="10" height="10" rx="2" fill="#1D9E75"/>
+  <text x="456" y="155" dominant-baseline="central" class="text-secondary" font-size="13">Safari 18%</text>
+
+  <rect x="440" y="180" width="10" height="10" rx="2" fill="#D85A30"/>
+  <text x="456" y="185" dominant-baseline="central" class="text-secondary" font-size="13">Firefox 8%</text>
+
+  <rect x="440" y="210" width="10" height="10" rx="2" fill="#D4537E"/>
+  <text x="456" y="215" dominant-baseline="central" class="text-secondary" font-size="13">Edge 6%</text>
+
+  <rect x="440" y="240" width="10" height="10" rx="2" fill="#888780"/>
+  <text x="456" y="245" dominant-baseline="central" class="text-secondary" font-size="13">Other 3%</text>
+</svg>

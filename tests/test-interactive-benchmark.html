@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Model Benchmark Explorer</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: system-ui, -apple-system, sans-serif;
+    background: #FAFAF7;
+    color: #2C2C2A;
+    padding: 2rem;
+    min-height: 100vh;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    body { background: #1a1a18; color: #E8E6DE; }
+    .card { background: #242422; border-color: rgba(255,255,255,0.1); }
+    .metric-card { background: #2a2a28; }
+    .metric-label { color: #9A988E; }
+    .section-label { color: #9A988E; }
+    input[type="range"] { background: rgba(255,255,255,0.15); }
+    .legend-dot { opacity: 0.9; }
+    .tab-btn { border-color: rgba(255,255,255,0.15); color: #9A988E; }
+    .tab-btn.active { background: #534AB7; color: #fff; border-color: #534AB7; }
+  }
+
+  .header {
+    margin-bottom: 2rem;
+  }
+  .header h1 {
+    font-size: 22px;
+    font-weight: 600;
+    color: #2C2C2A;
+    margin-bottom: 4px;
+  }
+  .header p {
+    font-size: 14px;
+    color: #5F5E5A;
+  }
+  @media (prefers-color-scheme: dark) {
+    .header h1 { color: #E8E6DE; }
+    .header p { color: #9A988E; }
+  }
+
+  .card {
+    background: #fff;
+    border: 0.5px solid rgba(0,0,0,0.12);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  /* Metric cards */
+  .metric-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-bottom: 1rem;
+  }
+  .metric-card {
+    background: #F1EFE8;
+    border-radius: 8px;
+    padding: 1rem;
+  }
+  .metric-label {
+    font-size: 12px;
+    color: #5F5E5A;
+    margin-bottom: 4px;
+  }
+  .metric-value {
+    font-size: 22px;
+    font-weight: 600;
+    color: #2C2C2A;
+    line-height: 1.1;
+  }
+  .metric-delta {
+    font-size: 11px;
+    margin-top: 3px;
+  }
+  .delta-up { color: #1D9E75; }
+  .delta-down { color: #D85A30; }
+
+  /* Controls */
+  .controls-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 1.25rem;
+    flex-wrap: wrap;
+  }
+  .section-label {
+    font-size: 13px;
+    color: #5F5E5A;
+    white-space: nowrap;
+    min-width: 80px;
+  }
+
+  input[type="range"] {
+    flex: 1;
+    min-width: 120px;
+    -webkit-appearance: none;
+    height: 4px;
+    background: rgba(0,0,0,0.12);
+    border-radius: 2px;
+    outline: none;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #534AB7;
+    cursor: pointer;
+  }
+  .range-out {
+    font-size: 13px;
+    font-weight: 500;
+    min-width: 28px;
+    text-align: right;
+  }
+
+  /* Tab buttons */
+  .tab-group {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 1.25rem;
+    flex-wrap: wrap;
+  }
+  .tab-btn {
+    background: transparent;
+    border: 0.5px solid rgba(0,0,0,0.2);
+    border-radius: 8px;
+    padding: 5px 14px;
+    font-size: 13px;
+    color: #5F5E5A;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-family: inherit;
+  }
+  .tab-btn:hover { border-color: #534AB7; color: #534AB7; }
+  .tab-btn.active { background: #534AB7; color: #fff; border-color: #534AB7; }
+
+  /* Chart area */
+  .chart-wrap {
+    position: relative;
+    width: 100%;
+    height: 280px;
+  }
+
+  /* Legend */
+  .legend {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-top: 12px;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: #5F5E5A;
+  }
+  .legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* Rank table */
+  .rank-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  .rank-table th {
+    text-align: left;
+    font-size: 11px;
+    font-weight: 500;
+    color: #5F5E5A;
+    padding: 0 8px 8px;
+    border-bottom: 0.5px solid rgba(0,0,0,0.1);
+  }
+  .rank-table td {
+    padding: 8px;
+    border-bottom: 0.5px solid rgba(0,0,0,0.06);
+    vertical-align: middle;
+  }
+  .rank-num {
+    font-weight: 600;
+    color: #888780;
+    font-size: 11px;
+  }
+  .model-name { font-weight: 500; }
+  .bar-cell { width: 140px; }
+  .bar-bg {
+    background: rgba(0,0,0,0.06);
+    border-radius: 3px;
+    height: 6px;
+    width: 100%;
+    overflow: hidden;
+  }
+  .bar-fill {
+    height: 6px;
+    border-radius: 3px;
+    transition: width 0.35s ease;
+  }
+  @media (prefers-color-scheme: dark) {
+    .rank-table th { color: #9A988E; border-color: rgba(255,255,255,0.1); }
+    .rank-table td { border-color: rgba(255,255,255,0.06); }
+    .bar-bg { background: rgba(255,255,255,0.08); }
+    .legend-item { color: #9A988E; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>AI Model Benchmark Explorer</h1>
+  <p>Compare frontier models across reasoning, coding, and knowledge tasks — 2024–2025</p>
+</div>
+
+<!-- Metric summary row -->
+<div class="metric-row" id="metric-row">
+  <div class="metric-card">
+    <div class="metric-label">Top scorer</div>
+    <div class="metric-value" id="m-top">—</div>
+  </div>
+  <div class="metric-card">
+    <div class="metric-label">Top score</div>
+    <div class="metric-value" id="m-score">—</div>
+  </div>
+  <div class="metric-card">
+    <div class="metric-label">Models shown</div>
+    <div class="metric-value" id="m-count">6</div>
+  </div>
+  <div class="metric-card">
+    <div class="metric-label">Benchmark</div>
+    <div class="metric-value" id="m-bench" style="font-size:14px; padding-top:4px;">MMLU</div>
+  </div>
+</div>
+
+<!-- Main chart card -->
+<div class="card">
+  <!-- Benchmark selector -->
+  <div class="tab-group" id="bench-tabs">
+    <button class="tab-btn active" data-bench="MMLU">MMLU</button>
+    <button class="tab-btn" data-bench="HumanEval">HumanEval</button>
+    <button class="tab-btn" data-bench="MATH">MATH</button>
+    <button class="tab-btn" data-bench="GPQA">GPQA</button>
+  </div>
+
+  <!-- Top-N slider -->
+  <div class="controls-row">
+    <span class="section-label">Show top</span>
+    <input type="range" id="top-n" min="2" max="8" value="6" step="1"/>
+    <span class="range-out" id="top-n-out">6</span>
+    <span class="section-label" style="margin-left:4px;">models</span>
+  </div>
+
+  <!-- Chart -->
+  <div class="chart-wrap">
+    <canvas id="benchChart"></canvas>
+  </div>
+
+  <!-- Legend -->
+  <div class="legend" id="chart-legend"></div>
+</div>
+
+<!-- Rank table card -->
+<div class="card">
+  <div style="font-size: 13px; font-weight: 500; margin-bottom: 1rem; color: #5F5E5A;">Detailed ranking</div>
+  <table class="rank-table" id="rank-table">
+    <thead>
+      <tr>
+        <th style="width:32px;">#</th>
+        <th>Model</th>
+        <th>Organization</th>
+        <th>Score</th>
+        <th class="bar-cell">Relative</th>
+      </tr>
+    </thead>
+    <tbody id="rank-body"></tbody>
+  </table>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js" onload="initAll()"></script>
+<script>
+// ── Data ──────────────────────────────────────────────────────────────────────
+const MODELS = [
+  { name: 'Claude 3.5 Sonnet', org: 'Anthropic', color: '#534AB7' },
+  { name: 'GPT-4o',            org: 'OpenAI',    color: '#1D9E75' },
+  { name: 'Gemini 1.5 Pro',   org: 'Google',    color: '#D85A30' },
+  { name: 'Llama 3.1 405B',   org: 'Meta',      color: '#C4689A' },
+  { name: 'Mistral Large 2',  org: 'Mistral',   color: '#2F74C0' },
+  { name: 'Command R+',       org: 'Cohere',    color: '#B08020' },
+  { name: 'DeepSeek-V2.5',    org: 'DeepSeek',  color: '#5CAF8A' },
+  { name: 'Qwen2 72B',        org: 'Alibaba',   color: '#A0522D' },
+];
+
+const BENCHMARKS = {
+  MMLU:      [88.7, 87.2, 85.9, 85.1, 84.0, 75.7, 84.0, 84.2],
+  HumanEval: [92.0, 90.2, 84.1, 89.0, 81.2, 71.5, 88.9, 86.1],
+  MATH:      [71.1, 76.6, 67.7, 73.8, 56.9, 42.0, 75.7, 69.9],
+  GPQA:      [59.4, 53.6, 46.2, 51.0, 43.1, 38.7, 55.2, 49.8],
+};
+
+// ── State ─────────────────────────────────────────────────────────────────────
+let activeBench = 'MMLU';
+let topN = 6;
+let chartInstance = null;
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+function getRanked(bench, n) {
+  const raw = BENCHMARKS[bench].map((score, i) => ({ ...MODELS[i], score }));
+  return raw.sort((a, b) => b.score - a.score).slice(0, n);
+}
+
+function fmt(n) { return n.toFixed(1); }
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+function initAll() {
+  const ctx = document.getElementById('benchChart').getContext('2d');
+  chartInstance = new Chart(ctx, {
+    type: 'bar',
+    data: buildChartData(),
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      indexAxis: 'y',
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: ctx => ` ${fmt(ctx.parsed.x)}%`
+          }
+        }
+      },
+      scales: {
+        x: {
+          min: 30,
+          max: 100,
+          grid: { color: 'rgba(0,0,0,0.05)' },
+          ticks: { font: { size: 12 }, color: '#888780', callback: v => v + '%' }
+        },
+        y: {
+          grid: { display: false },
+          ticks: { font: { size: 12 }, color: '#5F5E5A' }
+        }
+      }
+    }
+  });
+  renderAll();
+}
+
+function buildChartData() {
+  const ranked = getRanked(activeBench, topN);
+  return {
+    labels: ranked.map(m => m.name),
+    datasets: [{
+      data: ranked.map(m => m.score),
+      backgroundColor: ranked.map(m => m.color + 'CC'),
+      borderColor:     ranked.map(m => m.color),
+      borderWidth: 1,
+      borderRadius: 4,
+      barThickness: 22,
+    }]
+  };
+}
+
+function renderAll() {
+  const ranked = getRanked(activeBench, topN);
+  const top = ranked[0];
+  const maxScore = top.score;
+
+  // Metrics
+  document.getElementById('m-top').textContent   = top.name.split(' ').slice(0, 2).join(' ');
+  document.getElementById('m-score').textContent = fmt(top.score) + '%';
+  document.getElementById('m-count').textContent = ranked.length;
+  document.getElementById('m-bench').textContent = activeBench;
+
+  // Chart update
+  const d = buildChartData();
+  chartInstance.data.labels = d.labels;
+  chartInstance.data.datasets[0].data            = d.datasets[0].data;
+  chartInstance.data.datasets[0].backgroundColor = d.datasets[0].backgroundColor;
+  chartInstance.data.datasets[0].borderColor     = d.datasets[0].borderColor;
+  chartInstance.update('active');
+
+  // Legend
+  const legend = document.getElementById('chart-legend');
+  legend.innerHTML = ranked.map(m =>
+    `<div class="legend-item">
+       <div class="legend-dot" style="background:${m.color}"></div>
+       ${m.name}
+     </div>`
+  ).join('');
+
+  // Rank table
+  const tbody = document.getElementById('rank-body');
+  tbody.innerHTML = ranked.map((m, i) =>
+    `<tr>
+       <td class="rank-num">${i + 1}</td>
+       <td class="model-name">${m.name}</td>
+       <td style="color:#888780; font-size:12px;">${m.org}</td>
+       <td style="font-weight:500;">${fmt(m.score)}%</td>
+       <td class="bar-cell">
+         <div class="bar-bg">
+           <div class="bar-fill" style="width:${(m.score/maxScore*100).toFixed(1)}%; background:${m.color};"></div>
+         </div>
+       </td>
+     </tr>`
+  ).join('');
+}
+
+// ── Event wiring ──────────────────────────────────────────────────────────────
+document.getElementById('bench-tabs').addEventListener('click', e => {
+  const btn = e.target.closest('.tab-btn');
+  if (!btn) return;
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  activeBench = btn.dataset.bench;
+  if (chartInstance) renderAll();
+});
+
+const sliderN = document.getElementById('top-n');
+const outN    = document.getElementById('top-n-out');
+sliderN.oninput = () => {
+  topN = parseInt(sliderN.value);
+  outN.textContent = topN;
+  if (chartInstance) renderAll();
+};
+
+// Fallback if script already loaded
+if (window.Chart) initAll();
+</script>
+</body>
+</html>

@@ -4,6 +4,28 @@
 
 ---
 
+## 效果预览
+
+### 1) Flowchart 示例（优先看这个）
+
+![Flowchart demo](tests/test-flowchart.svg)
+
+### 2) OpenClaw 架构概览
+
+![OpenClaw overview](tests/openclaw-overview.svg)
+
+### 3) 分组柱状图
+
+![Bar chart demo](tests/test-bar-chart.svg)
+
+### 4) 甜甜圈图
+
+![Donut chart demo](tests/test-donut-chart.svg)
+
+> 交互式示例见 `tests/test-interactive-benchmark.html`
+
+---
+
 ## 这是什么
 
 这是一套提示词 Skill，提炼自 Claude 内置的生成式 UI 系统，将其视觉风格标准化为任何 LLM 都能遵循的规则文件。
@@ -19,15 +41,21 @@ Claude 的 artifact 图表有一套独特的设计语言：9 色调色系、680p
 ## 文件结构
 
 ```
-claude SVG charts/
-├── README.md             ← 你正在读的这个
-├── SKILL.md              ← 主 Skill 文件（模块路由 + 格式决策 + 完整规范）
-└── references/
-    ├── diagram.md        ← 流程图 / 结构图 / 说明图
-    ├── chart-types.md    ← 图表类型选择指南（9 种图表）
-    ├── mockup.md         ← UI 组件 / 仪表盘 / 数据卡片
-    ├── interactive.md    ← 滑块 / 动画 / stepper 交互组件
-    └── art.md            ← SVG 插画 / 几何图案
+claude infographic charts/
+├── README.md                         ← 你正在读的这个
+├── skill/
+│   ├── SKILL.md                      ← 主 Skill 文件（模块路由 + 格式决策 + 完整规范）
+│   ├── diagram.md                    ← 流程图 / 结构图 / 说明图
+│   ├── chart-types.md                ← 图表类型选择指南（9 种图表）
+│   ├── mockup.md                     ← UI 组件 / 仪表盘 / 数据卡片
+│   ├── interactive.md                ← 滑块 / 动画 / stepper 交互组件
+│   └── art.md                        ← SVG 插画 / 几何图案
+└── tests/
+    ├── test-flowchart.svg            ← 测试流程图
+    ├── openclaw-overview.svg         ← 架构概览图
+    ├── test-bar-chart.svg            ← 柱状图示例
+    ├── test-donut-chart.svg          ← 甜甜圈图示例
+    └── test-interactive-benchmark.html ← 交互式 HTML 示例
 ```
 
 ---
@@ -48,7 +76,7 @@ claude SVG charts/
 | amber  | `#BA7517` | `#854F0B` | `#633806` |
 | red    | `#E24B4A` | `#A32D2D` | `#791F1F` |
 
-每个色系包含 7 个色阶（50 / 100 / 200 / 400 / 600 / 800 / 900），完整色表见 `SKILL.md`。
+每个色系包含 7 个色阶（50 / 100 / 200 / 400 / 600 / 800 / 900），完整色表见 `skill/SKILL.md`。
 
 ### 三条核心规则
 
@@ -62,21 +90,21 @@ claude SVG charts/
 
 ### 在 Claude Code / Cowork 中作为 Skill
 
-将整个 `claude SVG charts` 文件夹放入你的项目目录下的 `.claude/skills/` 中，重命名为 `claude-svg-charts`，即可被 Claude Code 自动识别为可调用的 Skill。
+将整个仓库文件夹放入你的项目目录下的 `.claude/skills/` 中，并重命名为 `claude-svg-charts`，即可被 Claude Code 自动识别为可调用的 Skill。
 
 ### 作为提示词上下文（任何模型）
 
-直接将 `SKILL.md` 的内容作为 system prompt 或 context 传给任何 LLM，让它生成对应风格的 SVG 或 HTML 文件。需要更详细规范时，附上对应的 `references/` 文件。
+直接将 `skill/SKILL.md` 的内容作为 system prompt 或 context 传给任何 LLM，让它生成对应风格的 SVG 或 HTML 文件。需要更详细规范时，附上对应的 `skill/*.md` 模块文件。
 
 ### 五个视觉模块
 
 | 模块 | 参考文件 | 适用场景 |
 |------|---------|---------|
-| **diagram** | `references/diagram.md` | 流程图、架构图、原理说明图 |
-| **chart** | `references/chart-types.md` | 柱状图、折线图、饼图、散点图 |
-| **mockup** | `references/mockup.md` | UI 界面、数据卡片、仪表盘 |
-| **interactive** | `references/interactive.md` | 滑块、按钮、实时计算、动画 |
-| **art** | `references/art.md` | 插画、几何图案、装饰性视觉 |
+| **diagram** | `skill/diagram.md` | 流程图、架构图、原理说明图 |
+| **chart** | `skill/chart-types.md` | 柱状图、折线图、饼图、散点图 |
+| **mockup** | `skill/mockup.md` | UI 界面、数据卡片、仪表盘 |
+| **interactive** | `skill/interactive.md` | 滑块、按钮、实时计算、动画 |
+| **art** | `skill/art.md` | 插画、几何图案、装饰性视觉 |
 
 ---
 
