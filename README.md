@@ -1,6 +1,16 @@
-# Claude SVG Charts — 可移植视觉风格 Skill
+# Claude SVG Charts — 让任何大模型都能生成 Claude artifact 风格的专业图表、流程图和交互式可视化。
 
-> 让任何大模型都能生成 Claude artifact 风格的专业图表、流程图和交互式可视化。
+---
+
+## 这是什么
+
+这是一套提示词 Skill，提炼自 Claude 内置的生成式 UI 系统，将其视觉风格标准化为任何 LLM 都能遵循的规则文件。
+
+Claude 的 artifact 图表有一套独特的设计语言：9 色调色系、680px viewBox 基准、极简扁平美学、完整的亮/暗模式支持。这套 Skill 把这些规则从 Claude 的专有渲染管线中剥离出来，变成独立的、可复用的提示词规范。
+
+**输出格式两种：**
+- **SVG 文件** — 静态图表、流程图、架构图、插画
+- **HTML 文件** — 需要 JavaScript 的交互式图表（Chart.js、滑块、动画）
 
 ---
 
@@ -23,18 +33,6 @@
 ![Donut chart demo](tests/test-donut-chart.svg)
 
 > 交互式示例见 `tests/test-interactive-benchmark.html`
-
----
-
-## 这是什么
-
-这是一套提示词 Skill，提炼自 Claude 内置的生成式 UI 系统，将其视觉风格标准化为任何 LLM 都能遵循的规则文件。
-
-Claude 的 artifact 图表有一套独特的设计语言：9 色调色系、680px viewBox 基准、极简扁平美学、完整的亮/暗模式支持。这套 Skill 把这些规则从 Claude 的专有渲染管线中剥离出来，变成独立的、可复用的提示词规范。
-
-**输出格式两种：**
-- **SVG 文件** — 静态图表、流程图、架构图、插画
-- **HTML 文件** — 需要 JavaScript 的交互式图表（Chart.js、滑块、动画）
 
 ---
 
@@ -117,18 +115,6 @@ claude infographic charts/
 该仓库对 Claude 内置的生成式 UI 系统进行了逆向工程和开源还原，包含完整的 SVG 样式定义（`svg-styles.ts`）、9 色调色板规范、以及 5 个视觉模块的 Claude 官方提示词指南（`diagram.md`、`interactive.md`、`art.md` 等）。
 
 本 Skill 的工作是：将上述规范从 Claude 的专有渲染上下文中抽离，转换为任何 LLM 都能独立遵循的可移植提示词文件，同时扩展了 HTML 交互输出的支持。
-
----
-
-## 示例输出
-
-用这套 Skill 可以生成：
-
-- 多系列分组柱状图（SVG）
-- 甜甜圈市场份额图（SVG）
-- 带错误分支的 API 请求流程图（SVG）
-- 四层架构概览图（SVG）
-- 带 Chart.js 折线图 + 滑块控件的交互式仪表盘（HTML）
 
 ---
 
